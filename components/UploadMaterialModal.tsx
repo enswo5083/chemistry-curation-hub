@@ -1,13 +1,37 @@
 'use client';
 
-import { useState } from 'react';
-import { LessonMaterial, GradeLevel, MaterialCategory } from '@/lib/types';
-import { X, Upload, Sparkles, Check, AlertCircle, ShieldAlert, Award } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { LessonMaterial, GradeLevel, MaterialCategory, AttachedFile } from '@/lib/types';
+import { X, Upload, Sparkles, Check, AlertCircle, ShieldAlert, Award, FileUp, Paperclip, FileText, Trash2 } from 'lucide-react';
 
 interface UploadMaterialModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddMaterial: (material: LessonMaterial) => void;
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function getExtensionBadgeStyle(ext: string): { bg: string; text: string } {
+  switch (ext.toLowerCase()) {
+    case 'pdf':
+      return { bg: 'bg-rose-100 dark:bg-rose-950/60', text: 'text-rose-700 dark:text-rose-300' };
+    case 'hwp':
+    case 'hwpx':
+      return { bg: 'bg-sky-100 dark:bg-sky-950/60', text: 'text-sky-700 dark:text-sky-300' };
+    case 'ppt':
+    case 'pptx':
+      return { bg: 'bg-amber-100 dark:bg-amber-950/60', text: 'text-amber-700 dark:text-amber-300' };
+    case 'doc':
+    case 'docx':
+      return { bg: 'bg-indigo-100 dark:bg-indigo-950/60', text: 'text-indigo-700 dark:text-indigo-300' };
+    default:
+      return { bg: 'bg-purple-100 dark:bg-purple-950/60', text: 'text-purple-700 dark:text-purple-300' };
+  }
 }
 
 export default function UploadMaterialModal({
@@ -26,8 +50,45 @@ export default function UploadMaterialModal({
   const [safetyEquipments, setSafetyEquipments] = useState('');
   const [pedagogyModel, setPedagogyModel] = useState('5E 순환학습 모형');
   const [content, setContent] = useState('');
+  
+  // Attached File State (Optional)
+  const [attachedFile, setAttachedFile] = useState<AttachedFile | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
+
+  const handleProcessFile = (selected: File) => {
+    const ext = selected.name.split('.').pop()?.toLowerCase() || 'file';
+    
+    // Read file as Data URL for instant client-side download capability
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAttachedFile({
+        name: selected.name,
+        size: selected.size,
+        extension: ext,
+        dataUrl: reader.result as string,
+      });
+    };
+    reader.readAsDataURL(selected);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      handleProcessFile(selected);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const selected = e.dataTransfer.files?.[0];
+    if (selected) {
+      handleProcessFile(selected);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +132,7 @@ export default function UploadMaterialModal({
       pedagogyModel,
       views: 1,
       likes: 0,
+      attachedFile: attachedFile || undefined,
       content: content.trim() || `### 1. 학습 목표\n- ${topic}의 핵심 개념을 탐구하고 설명할 수 있다.\n\n### 2. 주요 내용\n${summary}`,
     };
 
@@ -84,6 +146,7 @@ export default function UploadMaterialModal({
     setFormulas('');
     setSafetyEquipments('');
     setContent('');
+    setAttachedFile(null);
   };
 
   return (
@@ -108,7 +171,7 @@ export default function UploadMaterialModal({
           신규 수업 자료 올리기
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6">
-          선생님의 귀중한 화학 수업 지도안, 탐구 실험 가이드 및 시뮬레이션 자료를 전국 교사와 학생에게 공유해 보세요.
+          선생님의 귀중한 화학 수업 지도안, 탐구 실험 가이드 및 파일(PDF, PPT, HWP, HWPX 등)을 전국 교사와 학생에게 공유해 보세요.
         </p>
 
         {/* Form */}
@@ -157,7 +220,7 @@ export default function UploadMaterialModal({
             <input
               type="text"
               required
-              placeholder="예: 물질과 에너지 단원 이상 기체 상태 방정식 MBL 압력 실험"
+              placeholder="예: [활동지 포함] 물질과 에너지 이상 기체 상태 방정식 MBL 압력 실험"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-4 py-2.5 neu-input text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500"
@@ -194,6 +257,84 @@ export default function UploadMaterialModal({
                 <option value="심화">심화 (수능/탐구 확장)</option>
               </select>
             </div>
+          </div>
+
+          {/* ==================================================== */}
+          {/* 📎 파일 첨부 영역 (PDF, PPT, PPTX, HWP, HWPX 등 지원) */}
+          {/* ==================================================== */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Paperclip className="w-3.5 h-3.5 text-violet-500" />
+                <span>수업 자료 파일 첨부</span>
+                <span className="text-[11px] font-normal text-slate-400 dark:text-slate-500">(선택 사항)</span>
+              </label>
+              <span className="text-[11px] text-slate-400">PDF, PPT, HWP, HWPX 등 지원</span>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.ppt,.pptx,.hwp,.hwpx,.doc,.docx,.xls,.xlsx,.zip,.png,.jpg,.jpeg"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
+            {!attachedFile ? (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+                className={`p-5 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center group ${
+                  isDragging
+                    ? 'border-violet-500 bg-violet-50/70 dark:bg-violet-950/40'
+                    : 'border-slate-300 dark:border-slate-700 hover:border-violet-400 dark:hover:border-violet-600 bg-slate-50/60 dark:bg-slate-800/40'
+                }`}
+              >
+                <div className="p-3 rounded-full bg-violet-100 dark:bg-violet-950/80 text-violet-600 dark:text-violet-400 mb-2 group-hover:scale-110 transition-transform">
+                  <FileUp className="w-5 h-5" />
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
+                  클릭하여 파일을 선택하거나 여기로 드래그하세요
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  지원 형식: <strong>PDF, PPT/PPTX, HWP/HWPX, Word</strong> 등 (최대 30MB)
+                </p>
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-violet-200 dark:border-violet-800/60 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <span
+                    className={`px-2.5 py-1 rounded-lg text-xs font-extrabold uppercase shrink-0 ${
+                      getExtensionBadgeStyle(attachedFile.extension).bg
+                    } ${getExtensionBadgeStyle(attachedFile.extension).text}`}
+                  >
+                    {attachedFile.extension}
+                  </span>
+                  <div className="truncate">
+                    <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                      {attachedFile.name}
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      파일 크기: {formatFileSize(attachedFile.size)}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setAttachedFile(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors shrink-0 ml-2"
+                  title="첨부 파일 삭제"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 핵심 화학식 & 적용 교수학습 모형 */}
@@ -237,7 +378,7 @@ export default function UploadMaterialModal({
               </label>
               <select
                 value={safetyLevel}
-                onChange={(e) => setSafetyLevel(e.target.value as any)}
+                onChange={(e) => setDifficulty(e.target.value as any)}
                 className="w-full px-3.5 py-2.5 neu-input text-sm font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="안전">안전 (일반 이론/가상 실험)</option>

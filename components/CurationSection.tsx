@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { INITIAL_MATERIALS } from '@/lib/initialData';
 import { LessonMaterial, GradeLevel, MaterialCategory } from '@/lib/types';
-import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2 } from 'lucide-react';
+import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2, Paperclip } from 'lucide-react';
 import MaterialModal from './MaterialModal';
 import UploadMaterialModal from './UploadMaterialModal';
 import confetti from 'canvas-confetti';
@@ -242,18 +242,26 @@ export default function CurationSection() {
                         </span>
                       </div>
                       
-                      {mat.safetyLevel && (
-                        <span className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                          mat.safetyLevel === '안전'
-                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                            : mat.safetyLevel === '주의'
-                            ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'
-                            : 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
-                        }`}>
-                          <Shield className="w-3 h-3" />
-                          {mat.safetyLevel}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        {mat.attachedFile && (
+                          <span className="flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+                            <Paperclip className="w-3 h-3" />
+                            {mat.attachedFile.extension.toUpperCase()}
+                          </span>
+                        )}
+                        {mat.safetyLevel && (
+                          <span className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                            mat.safetyLevel === '안전'
+                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : mat.safetyLevel === '주의'
+                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'
+                              : 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                          }`}>
+                            <Shield className="w-3 h-3" />
+                            {mat.safetyLevel}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Topic */}

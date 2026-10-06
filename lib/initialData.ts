@@ -16,6 +16,11 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     pedagogyModel: '개념기반 탐구학습 (Concept-Based Inquiry)',
     views: 1420,
     likes: 89,
+    attachedFile: {
+      name: '2022개정_통합과학_화학결합_개념정리.pdf',
+      size: 1420580,
+      extension: 'pdf'
+    },
     content: `### 1. 학습 목표 (2022 개정 교육과정)
 - 원소들의 주기적 성질(원자가 전자, 유효 핵전하 경향)을 설명할 수 있다.
 - 금속 원소와 비금속 원소가 결합하여 안정한 전자 배치를 형성하는 과정을 비교할 수 있다.
@@ -45,6 +50,11 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     pedagogyModel: '5E 순환학습 모형 (Explore & Explain)',
     views: 2890,
     likes: 215,
+    attachedFile: {
+      name: '화학_식초중화적정_실험지도안_학생활동지.hwpx',
+      size: 2450800,
+      extension: 'hwpx'
+    },
     content: `### 1. 실험 개요 및 준비물
 - **시약**: 시판 사과식초, 0.1M 표준 NaOH 용액, 1% 페놀프탈레인 지시약, 증류수
 - **기구**: 50mL 뷰렛, 100mL 삼각플라스크, 홀피펫(10mL), 깔때기, 스탠드 및 뷰렛 클램프, 흰색 종이
@@ -97,6 +107,11 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     pedagogyModel: '개념기반 탐구학습 (Concept-Based Inquiry)',
     views: 1980,
     likes: 162,
+    attachedFile: {
+      name: '물질과에너지_상태변화와엔탈피_수업자료.pptx',
+      size: 5820300,
+      extension: 'pptx'
+    },
     content: `### 1. 과목 핵심 성취기준 (물질과 에너지)
 - 물질의 미시적 구조와 분자 간 힘이 물질의 상태 및 끓는점, 녹는점에 미치는 영향을 설명할 수 있다.
 - 상태 변화와 화학 반응에서 출입하는 열에너지를 정량적으로 해석할 수 있다.
@@ -142,6 +157,11 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     pedagogyModel: '5E 탐구 모형 (Explore & Explain)',
     views: 2210,
     likes: 184,
+    attachedFile: {
+      name: '화학반응의세계_시계반응속도측정_실험지.hwp',
+      size: 1840200,
+      extension: 'hwp'
+    },
     content: `### 1. 2022 개정 화학 반응의 세계 핵심 역량
 - 화학 반응이 일어나는 속도와 그에 영향을 미치는 요인을 과학적 탐구를 통해 분석하고 충돌 이론과 전이 상태 이론으로 설명할 수 있다.
 
@@ -189,6 +209,11 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     pedagogyModel: '5E 모형 & 과정중심 평가',
     views: 2650,
     likes: 312,
+    attachedFile: {
+      name: '2022개정_화학과_5E수업설계_루브릭양식.hwpx',
+      size: 3120400,
+      extension: 'hwpx'
+    },
     content: `### 1. 5E 모형 단계별 수업 흐름표
 - **Engage (참여)**: 일상 현상(예: 베이킹소다와 식초 반응, 탄산음료 기포)으로 인지적 갈등 유발
 - **Explore (탐구)**: 조작적 변인 가설 설정 및 미세 실험(Microscale experiment) 수행

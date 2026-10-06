@@ -1,6 +1,13 @@
 export type GradeLevel = 'all' | 'integrated' | 'chem' | 'matter_energy' | 'reaction_world';
 export type MaterialCategory = 'all' | 'theory' | 'experiment' | 'simulation' | 'pedagogy';
 
+export interface AttachedFile {
+  name: string;
+  size: number;
+  extension: string;
+  dataUrl?: string;
+}
+
 export interface LessonMaterial {
   id: string;
   title: string;
@@ -18,6 +25,7 @@ export interface LessonMaterial {
   views: number;
   likes: number;
   downloadUrl?: string;
+  attachedFile?: AttachedFile;
   content: string;
 }
 
