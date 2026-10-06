@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { LessonMaterial, GradeLevel, MaterialCategory, AttachedFile } from '@/lib/types';
-import { X, Upload, Sparkles, Check, AlertCircle, ShieldAlert, Award, FileUp, Paperclip, FileText, Trash2 } from 'lucide-react';
+import { X, Upload, Sparkles, Check, AlertCircle, ShieldAlert, Award, FileUp, Paperclip, FileText, Trash2, Edit3 } from 'lucide-react';
 
 interface UploadMaterialModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddMaterial: (material: LessonMaterial) => void;
+  onUpdateMaterial?: (material: LessonMaterial) => void;
+  initialMaterial?: LessonMaterial | null;
 }
 
 function formatFileSize(bytes: number): string {
@@ -38,7 +40,11 @@ export default function UploadMaterialModal({
   isOpen,
   onClose,
   onAddMaterial,
+  onUpdateMaterial,
+  initialMaterial,
 }: UploadMaterialModalProps) {
+  const isEditing = Boolean(initialMaterial);
+
   const [grade, setGrade] = useState<'통합과학' | '화학' | '물질과 에너지' | '화학 반응의 세계'>('화학');
   const [category, setCategory] = useState<'이론' | '실험' | '시뮬레이션' | '교수학습'>('이론');
   const [title, setTitle] = useState('');
@@ -50,18 +56,47 @@ export default function UploadMaterialModal({
   const [safetyEquipments, setSafetyEquipments] = useState('');
   const [pedagogyModel, setPedagogyModel] = useState('5E 순환학습 모형');
   const [content, setContent] = useState('');
-  
-  // Attached File State (Optional)
   const [attachedFile, setAttachedFile] = useState<AttachedFile | null>(null);
+
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Pre-fill fields when editing
+  useEffect(() => {
+    if (initialMaterial) {
+      setGrade(initialMaterial.grade);
+      setCategory(initialMaterial.category);
+      setTitle(initialMaterial.title);
+      setTopic(initialMaterial.topic);
+      setSummary(initialMaterial.summary);
+      setDifficulty(initialMaterial.difficulty);
+      setFormulas(initialMaterial.keyFormulas?.join(', ') || '');
+      setSafetyLevel(initialMaterial.safetyLevel || '안전');
+      setSafetyEquipments(initialMaterial.safetyEquipments?.join(', ') || '');
+      setPedagogyModel(initialMaterial.pedagogyModel || '5E 순환학습 모형');
+      setContent(initialMaterial.content);
+      setAttachedFile(initialMaterial.attachedFile || null);
+    } else {
+      // Default reset
+      setGrade('화학');
+      setCategory('이론');
+      setTitle('');
+      setTopic('');
+      setSummary('');
+      setDifficulty('기본');
+      setFormulas('');
+      setSafetyLevel('안전');
+      setSafetyEquipments('');
+      setPedagogyModel('5E 순환학습 모형');
+      setContent('');
+      setAttachedFile(null);
+    }
+  }, [initialMaterial, isOpen]);
 
   if (!isOpen) return null;
 
   const handleProcessFile = (selected: File) => {
     const ext = selected.name.split('.').pop()?.toLowerCase() || 'file';
-    
-    // Read file as Data URL for instant client-side download capability
     const reader = new FileReader();
     reader.onload = () => {
       setAttachedFile({
@@ -116,8 +151,8 @@ export default function UploadMaterialModal({
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const newMat: LessonMaterial = {
-      id: `user-${Date.now()}`,
+    const targetMaterial: LessonMaterial = {
+      id: initialMaterial?.id || `user-${Date.now()}`,
       title: title.trim(),
       grade,
       gradeKey,
@@ -130,23 +165,19 @@ export default function UploadMaterialModal({
       safetyLevel,
       safetyEquipments: parsedEquipments.length > 0 ? parsedEquipments : ['보안경 착용'],
       pedagogyModel,
-      views: 1,
-      likes: 0,
+      views: initialMaterial?.views || 1,
+      likes: initialMaterial?.likes || 0,
       attachedFile: attachedFile || undefined,
       content: content.trim() || `### 1. 학습 목표\n- ${topic}의 핵심 개념을 탐구하고 설명할 수 있다.\n\n### 2. 주요 내용\n${summary}`,
     };
 
-    onAddMaterial(newMat);
-    onClose();
+    if (isEditing && onUpdateMaterial) {
+      onUpdateMaterial(targetMaterial);
+    } else {
+      onAddMaterial(targetMaterial);
+    }
 
-    // Reset fields
-    setTitle('');
-    setTopic('');
-    setSummary('');
-    setFormulas('');
-    setSafetyEquipments('');
-    setContent('');
-    setAttachedFile(null);
+    onClose();
   };
 
   return (
@@ -164,20 +195,22 @@ export default function UploadMaterialModal({
 
         {/* Modal Header */}
         <div className="flex items-center gap-2 mb-2 text-violet-600 dark:text-violet-400 font-bold text-xs uppercase tracking-wider">
-          <Upload className="w-4 h-4" />
-          <span>2022 개정 화학 수업 자료 등록</span>
+          {isEditing ? <Edit3 className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+          <span>{isEditing ? '2022 개정 화학 자료 수정' : '2022 개정 화학 수업 자료 등록'}</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2">
-          신규 수업 자료 올리기
+          {isEditing ? '수업 자료 수정 및 다시 올리기' : '신규 수업 자료 올리기'}
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6">
-          선생님의 귀중한 화학 수업 지도안, 탐구 실험 가이드 및 파일(PDF, PPT, HWP, HWPX 등)을 전국 교사와 학생에게 공유해 보세요.
+          {isEditing
+            ? '기존 등록된 자료의 내용, 과목 분류 및 첨부 파일(PDF, PPT, HWP, HWPX)을 수정하여 다시 게시합니다.'
+            : '선생님의 귀중한 화학 수업 지도안, 탐구 실험 가이드 및 파일(PDF, PPT, HWP, HWPX 등)을 전국 교사와 학생에게 공유해 보세요.'}
         </p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* 과목 & 자료 유형 (2022 개정 교육과정 기준) */}
+          {/* 과목 & 자료 유형 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -259,14 +292,12 @@ export default function UploadMaterialModal({
             </div>
           </div>
 
-          {/* ==================================================== */}
-          {/* 📎 파일 첨부 영역 (PDF, PPT, PPTX, HWP, HWPX 등 지원) */}
-          {/* ==================================================== */}
+          {/* 📎 파일 첨부 / 교체 영역 */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Paperclip className="w-3.5 h-3.5 text-violet-500" />
-                <span>수업 자료 파일 첨부</span>
+                <span>수업 자료 파일 첨부 {isEditing && '(교체 가능)'}</span>
                 <span className="text-[11px] font-normal text-slate-400 dark:text-slate-500">(선택 사항)</span>
               </label>
               <span className="text-[11px] text-slate-400">PDF, PPT, HWP, HWPX 등 지원</span>
@@ -325,14 +356,23 @@ export default function UploadMaterialModal({
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setAttachedFile(null)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors shrink-0 ml-2"
-                  title="첨부 파일 삭제"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2 shrink-0 ml-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold neu-button text-slate-600 dark:text-slate-300 hover:text-violet-600"
+                  >
+                    파일 교체
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAttachedFile(null)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                    title="첨부 파일 삭제"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -378,7 +418,7 @@ export default function UploadMaterialModal({
               </label>
               <select
                 value={safetyLevel}
-                onChange={(e) => setDifficulty(e.target.value as any)}
+                onChange={(e) => setSafetyLevel(e.target.value as any)}
                 className="w-full px-3.5 py-2.5 neu-input text-sm font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="안전">안전 (일반 이론/가상 실험)</option>
@@ -443,8 +483,8 @@ export default function UploadMaterialModal({
               type="submit"
               className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 shadow-md shadow-violet-500/25 transition-all"
             >
-              <Upload className="w-4 h-4" />
-              자료 등록하기
+              {isEditing ? <Edit3 className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+              {isEditing ? '수정 내용 반영하기' : '자료 등록하기'}
             </button>
           </div>
 

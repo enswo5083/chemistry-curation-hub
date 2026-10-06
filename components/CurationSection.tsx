@@ -3,7 +3,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { INITIAL_MATERIALS } from '@/lib/initialData';
 import { LessonMaterial, GradeLevel, MaterialCategory } from '@/lib/types';
-import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2, Paperclip } from 'lucide-react';
+import { getMaterialsFromStorage, saveMaterialToStorage, deleteMaterialFromStorage } from '@/lib/storage';
+import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2, Paperclip, Edit3, Trash2 } from 'lucide-react';
 import MaterialModal from './MaterialModal';
 import UploadMaterialModal from './UploadMaterialModal';
 import confetti from 'canvas-confetti';
@@ -13,24 +14,41 @@ export default function CurationSection() {
   const [selectedGrade, setSelectedGrade] = useState<GradeLevel>('all');
   const [selectedCategory, setSelectedCategory] = useState<MaterialCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Modals state
   const [activeModalMaterial, setActiveModalMaterial] = useState<LessonMaterial | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<LessonMaterial | null>(null);
+
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load any previously uploaded materials from localStorage
+  // Load persistent user materials from IndexedDB/LocalStorage on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('user-uploaded-chemistry-materials');
-      if (saved) {
-        const parsed: LessonMaterial[] = JSON.parse(saved);
-        if (parsed.length > 0) {
-          setMaterials([...parsed, ...INITIAL_MATERIALS]);
+    async function loadSavedMaterials() {
+      try {
+        const saved = await getMaterialsFromStorage();
+        if (saved && saved.length > 0) {
+          // Merge user-saved materials with INITIAL_MATERIALS, replacing if ID matches
+          const savedMap = new Map<string, LessonMaterial>();
+          saved.forEach((m) => savedMap.set(m.id, m));
+          
+          const mergedInitial = INITIAL_MATERIALS.map((init) =>
+            savedMap.has(init.id) ? savedMap.get(init.id)! : init
+          );
+
+          // Find brand new user creations (IDs not in initial)
+          const newCreations = saved.filter(
+            (s) => !INITIAL_MATERIALS.some((init) => init.id === s.id)
+          );
+
+          setMaterials([...newCreations, ...mergedInitial]);
         }
+      } catch (err) {
+        console.warn('Error loading materials from storage:', err);
       }
-    } catch (e) {
-      console.warn('Failed to load user materials:', e);
     }
+    loadSavedMaterials();
   }, []);
 
   const gradeOptions: { key: GradeLevel; label: string; badge: string }[] = [
@@ -62,31 +80,58 @@ export default function CurationSection() {
     });
   }, [materials, selectedGrade, selectedCategory, searchQuery]);
 
-  const handleAddMaterial = (newMat: LessonMaterial) => {
+  // Handle adding new material
+  const handleAddMaterial = async (newMat: LessonMaterial) => {
     const updated = [newMat, ...materials];
     setMaterials(updated);
 
-    // Save to localStorage
-    try {
-      const saved = localStorage.getItem('user-uploaded-chemistry-materials');
-      const existing: LessonMaterial[] = saved ? JSON.parse(saved) : [];
-      localStorage.setItem('user-uploaded-chemistry-materials', JSON.stringify([newMat, ...existing]));
-    } catch (err) {
-      console.warn('Storage save error:', err);
-    }
+    // Save reliably to IndexedDB & LocalStorage
+    await saveMaterialToStorage(newMat);
 
-    // Trigger feedback
     confetti({
       particleCount: 50,
       spread: 60,
       origin: { y: 0.7 },
     });
 
-    setToastMessage(`"${newMat.title}" 자료가 성공적으로 등록되었습니다!`);
+    setToastMessage(`"${newMat.title}" 자료가 성공적으로 등록 및 저장되었습니다!`);
     setTimeout(() => setToastMessage(null), 3500);
 
-    // Automatically select the course of newly added material
     setSelectedGrade(newMat.gradeKey);
+  };
+
+  // Handle updating existing material
+  const handleUpdateMaterial = async (updatedMat: LessonMaterial) => {
+    const updated = materials.map((m) => (m.id === updatedMat.id ? updatedMat : m));
+    setMaterials(updated);
+
+    // Update in persistent storage
+    await saveMaterialToStorage(updatedMat);
+
+    if (activeModalMaterial?.id === updatedMat.id) {
+      setActiveModalMaterial(updatedMat);
+    }
+
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.7 },
+    });
+
+    setToastMessage(`"${updatedMat.title}" 자료가 성공적으로 수정되어 다시 게시되었습니다!`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleOpenEdit = (mat: LessonMaterial, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveModalMaterial(null);
+    setEditingMaterial(mat);
+    setIsUploadModalOpen(true);
+  };
+
+  const handleOpenUploadNew = () => {
+    setEditingMaterial(null);
+    setIsUploadModalOpen(true);
   };
 
   const handleLike = (id: string, e: React.MouseEvent) => {
@@ -136,7 +181,7 @@ export default function CurationSection() {
           <div className="flex flex-wrap items-center gap-3">
             {/* Direct Upload Button */}
             <button
-              onClick={() => setIsUploadModalOpen(true)}
+              onClick={handleOpenUploadNew}
               className="flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 shadow-md shadow-violet-500/25 hover:-translate-y-0.5 transition-all shrink-0"
             >
               <Upload className="w-4 h-4" />
@@ -213,7 +258,7 @@ export default function CurationSection() {
             <p className="text-slate-700 dark:text-slate-300 font-semibold mb-2">선택한 조건의 자료가 없습니다</p>
             <p className="text-xs text-slate-400 mb-6">선생님께서 첫 번째 수업 자료를 직접 등록해 보세요!</p>
             <button
-              onClick={() => setIsUploadModalOpen(true)}
+              onClick={handleOpenUploadNew}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 shadow-md"
             >
               <Upload className="w-3.5 h-3.5" />
@@ -228,7 +273,7 @@ export default function CurationSection() {
                 <div
                   key={mat.id}
                   onClick={() => setActiveModalMaterial(mat)}
-                  className="neu-card p-6 flex flex-col justify-between cursor-pointer group"
+                  className="neu-card p-6 flex flex-col justify-between cursor-pointer group relative"
                 >
                   <div>
                     {/* Top Badges */}
@@ -304,9 +349,21 @@ export default function CurationSection() {
                       <span>{mat.likes}</span>
                     </button>
 
-                    <div className="flex items-center gap-1 text-xs font-bold text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform">
-                      <span>지도안 열기</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-2">
+                      {/* ✏️ Direct Edit Action on Card */}
+                      <button
+                        onClick={(e) => handleOpenEdit(mat, e)}
+                        className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
+                        title="자료 수정 및 다시 올리기"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>수정</span>
+                      </button>
+
+                      <div className="flex items-center gap-1 text-xs font-bold text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform">
+                        <span>지도안 열기</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -321,13 +378,19 @@ export default function CurationSection() {
       <MaterialModal
         material={activeModalMaterial}
         onClose={() => setActiveModalMaterial(null)}
+        onEdit={handleOpenEdit}
       />
 
-      {/* Upload Material Modal */}
+      {/* Upload & Edit Material Modal */}
       <UploadMaterialModal
         isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
+        onClose={() => {
+          setIsUploadModalOpen(false);
+          setEditingMaterial(null);
+        }}
         onAddMaterial={handleAddMaterial}
+        onUpdateMaterial={handleUpdateMaterial}
+        initialMaterial={editingMaterial}
       />
     </section>
   );

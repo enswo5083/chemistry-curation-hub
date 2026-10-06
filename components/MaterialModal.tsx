@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { LessonMaterial } from '@/lib/types';
-import { X, Check, Copy, Download, ShieldAlert, Award, BookOpen, Share2, Paperclip, FileText } from 'lucide-react';
+import { X, Check, Copy, Download, ShieldAlert, Award, BookOpen, Share2, Paperclip, FileText, Edit3 } from 'lucide-react';
 
 interface MaterialModalProps {
   material: LessonMaterial | null;
   onClose: () => void;
+  onEdit?: (material: LessonMaterial) => void;
 }
 
 function formatFileSize(bytes: number): string {
@@ -33,7 +34,7 @@ function getExtensionBadgeStyle(ext: string): { bg: string; text: string } {
   }
 }
 
-export default function MaterialModal({ material, onClose }: MaterialModalProps) {
+export default function MaterialModal({ material, onClose, onEdit }: MaterialModalProps) {
   const [copied, setCopied] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
@@ -58,7 +59,6 @@ export default function MaterialModal({ material, onClose }: MaterialModalProps)
       link.click();
       document.body.removeChild(link);
     } else {
-      // Create a markdown/text download blob with the lesson plan content
       const contentText = `[2022 개정 고등학교 화학 수업 자료]\n제목: ${material.title}\n과목: ${material.grade} | 단원: ${material.topic} | 유형: ${material.category}\n적용 모형: ${material.pedagogyModel || '5E 모형'}\n\n${material.content}`;
       const blob = new Blob([contentText], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -209,13 +209,24 @@ export default function MaterialModal({ material, onClose }: MaterialModalProps)
             <span>추천수 {material.likes}개</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* ✏️ Edit Material Action */}
+            {onEdit && (
+              <button
+                onClick={() => onEdit(material)}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
+              >
+                <Edit3 className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                <span>자료 수정 / 다시 올리기</span>
+              </button>
+            )}
+
             <button
               onClick={handleCopy}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm neu-card hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm neu-card hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-              {copied ? '지도안 복사완료!' : '지도안 텍스트 복사'}
+              {copied ? '복사완료!' : '지도안 텍스트 복사'}
             </button>
 
             {material.attachedFile ? (
