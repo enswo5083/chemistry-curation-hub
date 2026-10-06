@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { INITIAL_MATERIALS } from '@/lib/initialData';
 import { LessonMaterial, GradeLevel, MaterialCategory } from '@/lib/types';
-import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield } from 'lucide-react';
+import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2 } from 'lucide-react';
 import MaterialModal from './MaterialModal';
+import UploadMaterialModal from './UploadMaterialModal';
+import confetti from 'canvas-confetti';
 
 export default function CurationSection() {
   const [materials, setMaterials] = useState<LessonMaterial[]>(INITIAL_MATERIALS);
@@ -12,14 +14,31 @@ export default function CurationSection() {
   const [selectedCategory, setSelectedCategory] = useState<MaterialCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalMaterial, setActiveModalMaterial] = useState<LessonMaterial | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const gradeOptions: { key: GradeLevel; label: string }[] = [
-    { key: 'all', label: '전체 학년' },
-    { key: 'integrated', label: '통합과학 (공통)' },
-    { key: 'chem1', label: '화학 I (일반선택)' },
-    { key: 'chem2', label: '화학 II (진로선택)' },
-    { key: 'advanced', label: '고급 화학 (전문교과)' },
+  // Load any previously uploaded materials from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('user-uploaded-chemistry-materials');
+      if (saved) {
+        const parsed: LessonMaterial[] = JSON.parse(saved);
+        if (parsed.length > 0) {
+          setMaterials([...parsed, ...INITIAL_MATERIALS]);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load user materials:', e);
+    }
+  }, []);
+
+  const gradeOptions: { key: GradeLevel; label: string; badge: string }[] = [
+    { key: 'all', label: '전체 과목', badge: '전체' },
+    { key: 'integrated', label: '통합과학', badge: '공통' },
+    { key: 'chem', label: '화학', badge: '일반선택' },
+    { key: 'matter_energy', label: '물질과 에너지', badge: '진로선택' },
+    { key: 'reaction_world', label: '화학 반응의 세계', badge: '진로선택' },
   ];
 
   const categoryOptions: { key: MaterialCategory; label: string; icon: any }[] = [
@@ -43,6 +62,33 @@ export default function CurationSection() {
     });
   }, [materials, selectedGrade, selectedCategory, searchQuery]);
 
+  const handleAddMaterial = (newMat: LessonMaterial) => {
+    const updated = [newMat, ...materials];
+    setMaterials(updated);
+
+    // Save to localStorage
+    try {
+      const saved = localStorage.getItem('user-uploaded-chemistry-materials');
+      const existing: LessonMaterial[] = saved ? JSON.parse(saved) : [];
+      localStorage.setItem('user-uploaded-chemistry-materials', JSON.stringify([newMat, ...existing]));
+    } catch (err) {
+      console.warn('Storage save error:', err);
+    }
+
+    // Trigger feedback
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.7 },
+    });
+
+    setToastMessage(`"${newMat.title}" 자료가 성공적으로 등록되었습니다!`);
+    setTimeout(() => setToastMessage(null), 3500);
+
+    // Automatically select the course of newly added material
+    setSelectedGrade(newMat.gradeKey);
+  };
+
   const handleLike = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setLikedIds((prev) => {
@@ -64,49 +110,75 @@ export default function CurationSection() {
     <section id="curation" className="py-16 md:py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Title */}
+        {/* Toast Notification */}
+        {toastMessage && (
+          <div className="fixed top-24 right-4 sm:right-8 z-50 flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-600/30 font-semibold text-sm animate-bounce">
+            <CheckCircle2 className="w-5 h-5 text-emerald-200" />
+            <span>{toastMessage}</span>
+          </div>
+        )}
+
+        {/* Section Title & Actions */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <div className="flex items-center gap-2 text-violet-600 dark:text-violet-400 font-bold text-sm tracking-wide uppercase mb-2">
               <Sparkles className="w-4 h-4" />
-              <span>Curated Lesson Materials</span>
+              <span>2022 Revised Curriculum Hub</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
-              학년별 & 주제별 맞춤 화학 수업 자료
+              2022 개정 화학 수업 자료 큐레이션
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mt-2 max-w-2xl text-sm sm:text-base">
-              2022 개정 교육과정 성취기준에 맞춘 검증된 이론 강의노트, 실험 안전 프로토콜 및 인터랙티브 시뮬레이션
+              <strong>통합과학</strong>, <strong>화학</strong>, <strong>물질과 에너지</strong>, <strong>화학 반응의 세계</strong> 교과별 검증된 강의노트, 실험 안전 프로토콜 및 인터랙티브 탐구 지도안
             </p>
           </div>
 
-          {/* Neumorphic Search Bar */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="단원, 화학식, 실험 검색..."
-              className="w-full pl-11 pr-4 py-3 neu-input text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
-            />
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Direct Upload Button */}
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 shadow-md shadow-violet-500/25 hover:-translate-y-0.5 transition-all shrink-0"
+            >
+              <Upload className="w-4 h-4" />
+              자료 올리기
+            </button>
+
+            {/* Neumorphic Search Bar */}
+            <div className="relative w-full sm:w-64 md:w-72">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="단원, 화학식, 실험 검색..."
+                className="w-full pl-11 pr-4 py-3 neu-input text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Grade Filter Pills (Flat 2.0 / Neumorphism) */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-4 scrollbar-none">
+        {/* 2022 개정 교과목 Filter Pills */}
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-3 mb-4 scrollbar-none">
           {gradeOptions.map((g) => {
             const active = selectedGrade === g.key;
             return (
               <button
                 key={g.key}
                 onClick={() => setSelectedGrade(g.key)}
-                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 shrink-0 ${
                   active
                     ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/30'
-                    : 'neu-button text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400'
+                    : 'neu-button text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400'
                 }`}
               >
-                {g.label}
+                <span>{g.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${
+                  active 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-slate-200/80 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                }`}>
+                  {g.badge}
+                </span>
               </button>
             );
           })}
@@ -138,8 +210,15 @@ export default function CurationSection() {
         {filteredMaterials.length === 0 ? (
           <div className="neu-card p-12 text-center max-w-md mx-auto">
             <BookOpen className="w-12 h-12 text-slate-400 mx-auto mb-4 opacity-50" />
-            <p className="text-slate-600 dark:text-slate-400 font-semibold mb-2">검색된 자료가 없습니다</p>
-            <p className="text-xs text-slate-400">다른 키워드나 필터 조건을 선택해 보세요.</p>
+            <p className="text-slate-700 dark:text-slate-300 font-semibold mb-2">선택한 조건의 자료가 없습니다</p>
+            <p className="text-xs text-slate-400 mb-6">선생님께서 첫 번째 수업 자료를 직접 등록해 보세요!</p>
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 shadow-md"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              지금 자료 올리기
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -154,11 +233,11 @@ export default function CurationSection() {
                   <div>
                     {/* Top Badges */}
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300">
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/60 dark:border-violet-800/60">
                           {mat.grade}
                         </span>
-                        <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        <span className="px-2 py-0.5 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                           {mat.category}
                         </span>
                       </div>
@@ -195,7 +274,7 @@ export default function CurationSection() {
                     {/* Formulas snippet */}
                     {mat.keyFormulas && mat.keyFormulas.length > 0 && (
                       <div className="p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-800 mb-4">
-                        <div className="text-[10px] uppercase font-bold text-slate-400 mb-1">핵심 공식</div>
+                        <div className="text-[10px] uppercase font-bold text-slate-400 mb-1">핵심 공식 / 반응식</div>
                         <div className="font-mono text-xs text-purple-700 dark:text-purple-300 truncate">
                           {mat.keyFormulas[0]}
                         </div>
@@ -230,10 +309,17 @@ export default function CurationSection() {
 
       </div>
 
-      {/* Modal View */}
+      {/* Modal View for Details */}
       <MaterialModal
         material={activeModalMaterial}
         onClose={() => setActiveModalMaterial(null)}
+      />
+
+      {/* Upload Material Modal */}
+      <UploadMaterialModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onAddMaterial={handleAddMaterial}
       />
     </section>
   );

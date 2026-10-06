@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FlaskConical, Atom, BookOpen, Brain, Trophy, MessageSquare, Zap, Menu, X } from 'lucide-react';
+import { FlaskConical, Atom, BookOpen, Brain, Trophy, MessageSquare, Zap, Menu, X, Upload } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
@@ -25,7 +25,7 @@ export default function Navbar() {
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Curriculum & Inquiry Hub
+              2022 개정 화학 · 물질과 에너지 · 화학 반응의 세계
             </p>
           </div>
         </Link>
@@ -71,9 +71,17 @@ export default function Navbar() {
 
         {/* Right Action & Theme Toggle */}
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
+          <a
+            href="#curation"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 shadow-sm shadow-violet-500/20 transition-all"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            자료 올리기
+          </a>
+
+          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
             <Zap className="w-3.5 h-3.5 text-emerald-500 animate-bounce" />
-            <span>서울(icn1) 리전 최적화</span>
+            <span>서울(icn1) 리전</span>
           </div>
 
           <ThemeToggle />
@@ -98,6 +106,13 @@ export default function Navbar() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-900/30"
           >
             <BookOpen className="w-4 h-4 text-purple-500" /> 수업 자료 아카이브
+          </a>
+          <a
+            href="#curation"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-violet-600 dark:text-violet-400 bg-purple-50 dark:bg-purple-950/40"
+          >
+            <Upload className="w-4 h-4" /> 신규 자료 올리기
           </a>
           <a
             href="#pedagogy"

@@ -1,4 +1,4 @@
-import { Sparkles, Compass, Flame, ArrowRight, ShieldCheck, Zap, BookOpen } from 'lucide-react';
+import { Sparkles, Compass, Flame, ArrowRight, ShieldCheck, Zap, BookOpen, Upload } from 'lucide-react';
 
 export default function HeroBanner() {
   return (
@@ -14,7 +14,7 @@ export default function HeroBanner() {
           <span className="flex h-2 w-2 rounded-full bg-violet-500 animate-ping" />
           <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400" />
           <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-violet-700 to-cyan-600 dark:from-violet-300 dark:to-cyan-300 bg-clip-text text-transparent">
-            2022 개정 교육과정 & 최신 탐구 교수학습 모형 완벽 탑재
+            2022 개정 교육과정 화학과 재편 반영 완료
           </span>
         </div>
 
@@ -28,12 +28,12 @@ export default function HeroBanner() {
 
         {/* Hero Description */}
         <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-10">
-          통합과학 화학 영역부터 화학 I·II, 고급 화학까지 학년별·주제별 개념 이론,
-          실험실 안전 매뉴얼, <span className="font-semibold text-purple-600 dark:text-purple-400">5E 순환학습 모형 및 개념기반 탐구</span> 교수학습 지도안을
-          한눈에 큐레이션하는 대한민국 교사·학생을 위한 전문 플랫폼입니다.
+          공통과목 <strong>통합과학</strong>부터 일반선택 <strong>화학</strong>, 진로선택 <strong>물질과 에너지</strong> 및 <strong>화학 반응의 세계</strong>까지!
+          개념 이론, 실험실 안전 매뉴얼, <span className="font-semibold text-purple-600 dark:text-purple-400">5E 순환학습 모형 및 개념기반 탐구</span> 교수학습 지도안을
+          자유롭게 탐색하고 직접 자료를 공유하는 열린 교육 플랫폼입니다.
         </p>
 
-        {/* Neumorphic & Modern Gradient Action Buttons */}
+        {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
           <a
             href="#curation"
@@ -45,32 +45,40 @@ export default function HeroBanner() {
           </a>
 
           <a
+            href="#curation"
+            className="flex items-center gap-2.5 px-7 py-4 rounded-2xl font-bold text-slate-800 dark:text-slate-100 neu-card hover:-translate-y-1 transition-all duration-300 border border-violet-300/40 dark:border-violet-700/40"
+          >
+            <Upload className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+            내 자료 올리기
+          </a>
+
+          <a
             href="#quiz"
-            className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-slate-800 dark:text-slate-100 neu-card hover:-translate-y-1 transition-all duration-300"
+            className="flex items-center gap-2.5 px-7 py-4 rounded-2xl font-bold text-slate-800 dark:text-slate-100 neu-card hover:-translate-y-1 transition-all duration-300"
           >
             <Flame className="w-5 h-5 text-amber-500 animate-bounce" />
-            화학 챔피언십 퀴즈 풀기
+            화학 퀴즈 풀기
           </a>
         </div>
 
-        {/* Stat Highlights Cards with Soft Neumorphism */}
+        {/* Stat Highlights Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
           <div className="neu-card p-5 text-left">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">커리큘럼</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">2022 개정 교과</span>
               <Compass className="w-5 h-5 text-violet-500" />
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">4개 교과</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">통합과학·화학I·II·고급화학</p>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">4개 교과군</div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">화학·물질과에너지·반응의세계</p>
           </div>
 
           <div className="neu-card p-5 text-left">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">자료 아카이브</span>
-              <BookOpen className="w-5 h-5 text-cyan-500" />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">자료 등록</span>
+              <Upload className="w-5 h-5 text-cyan-500" />
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">100% 검증</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">이론, 실험, 시뮬레이션</p>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">자료 올리기</div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">선생님 수업자료 원클릭 등록</p>
           </div>
 
           <div className="neu-card p-5 text-left">
@@ -78,7 +86,7 @@ export default function HeroBanner() {
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">탐구 안전 등급</span>
               <ShieldCheck className="w-5 h-5 text-emerald-500" />
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">MSDS 준수</div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">MSDS 준수</div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">실험 안전 매뉴얼 제공</p>
           </div>
 
@@ -87,7 +95,7 @@ export default function HeroBanner() {
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">인프라 통일</span>
               <Zap className="w-5 h-5 text-amber-500" />
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">서울 리전</div>
+            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">서울 리전</div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Vercel icn1 + Supabase</p>
           </div>
         </div>

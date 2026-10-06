@@ -16,7 +16,7 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     pedagogyModel: '개념기반 탐구학습 (Concept-Based Inquiry)',
     views: 1420,
     likes: 89,
-    content: `### 1. 학습 목표
+    content: `### 1. 학습 목표 (2022 개정 교육과정)
 - 원소들의 주기적 성질(원자가 전자, 유효 핵전하 경향)을 설명할 수 있다.
 - 금속 원소와 비금속 원소가 결합하여 안정한 전자 배치를 형성하는 과정을 비교할 수 있다.
 
@@ -32,9 +32,9 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
   {
     id: 'mat-2',
     title: '식초 속 아세트산 함량 분석: 중화 적정 정량 실험',
-    grade: '화학 I',
-    gradeKey: 'chem1',
-    topic: '산·염기 중화 반응',
+    grade: '화학',
+    gradeKey: 'chem',
+    topic: '산·염기 중화 반응 (일반선택)',
     category: '실험',
     categoryKey: 'experiment',
     summary: '표준 수산화 나트륨(NaOH) 용액을 뷰렛에 넣고 페놀프탈레인 지시약을 이용해 시판 식초 속 아세트산의 몰 농도와 질량 백분율을 정량 측정합니다.',
@@ -62,9 +62,9 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
   {
     id: 'mat-3',
     title: '화학 반응의 몰(Mole) 계산과 기체 반응 법칙 인터랙티브 시뮬레이션',
-    grade: '화학 I',
-    gradeKey: 'chem1',
-    topic: '화학의 첫걸음 / 양적 관계',
+    grade: '화학',
+    gradeKey: 'chem',
+    topic: '물질의 양과 화학 반응식',
     category: '시뮬레이션',
     categoryKey: 'simulation',
     summary: '학생들이 가장 어려워하는 한계 반응물(Limiting Reagent)과 기체의 부피-몰수 관계를 인터랙티브 분자 시뮬레이션으로 시각화합니다.',
@@ -84,60 +84,78 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
   },
   {
     id: 'mat-4',
-    title: '화학 평형과 르샤틀리에 원리: 농도·압력·온도 변화 가역 반응',
-    grade: '화학 II',
-    gradeKey: 'chem2',
-    topic: '반응 속도와 화학 평형',
+    title: '물질의 상태 변화와 분자 간 상호작용 및 열에너지 전달',
+    grade: '물질과 에너지',
+    gradeKey: 'matter_energy',
+    topic: '기체·액체·고체와 에너지 변화',
     category: '이론',
     categoryKey: 'theory',
-    summary: '동적 평형의 개념을 이해하고, 외부 조건 변화에 따라 평형이 어떻게 이동하여 새로운 평형 상태에 도달하는지 반응 지수(Q)와 평형 상수(K)로 분석합니다.',
+    summary: '분자 간 상호작용(쌍극자-쌍극자 힘, 분산력, 수소 결합)과 상태 변화에 따른 잠열 및 엔탈피 변화(ΔH)의 상관관계를 탐구합니다.',
+    difficulty: '기본',
+    keyFormulas: ['q = m·c·ΔT', 'ΔH_vap, ΔH_fus', 'P·V = n·R·T (이상 기체 상태 방정식)'],
+    safetyLevel: '안전',
+    pedagogyModel: '개념기반 탐구학습 (Concept-Based Inquiry)',
+    views: 1980,
+    likes: 162,
+    content: `### 1. 과목 핵심 성취기준 (물질과 에너지)
+- 물질의 미시적 구조와 분자 간 힘이 물질의 상태 및 끓는점, 녹는점에 미치는 영향을 설명할 수 있다.
+- 상태 변화와 화학 반응에서 출입하는 열에너지를 정량적으로 해석할 수 있다.
+
+### 2. 교수학습 지도 가이드
+- 거시적 상태 변화 그래프(가열 곡선)와 미시적 입자 운동의 역동적 애니메이션을 교차 제시하여 입자 간 인력과 운동 에너지의 평형 관계를 직관적으로 이해시킵니다.`
+  },
+  {
+    id: 'mat-5',
+    title: '화학 평형과 르샤틀리에 원리: 가역 반응의 열역학적 해석',
+    grade: '물질과 에너지',
+    gradeKey: 'matter_energy',
+    topic: '화학 평형과 에너지',
+    category: '실험',
+    categoryKey: 'experiment',
+    summary: '동적 평형의 개념을 이해하고, 온도·농도·압력 변화에 따른 평형 이동을 NO₂/N₂O₄ 기체 앰플 실험을 통해 시각적으로 입증합니다.',
     difficulty: '심화',
     keyFormulas: ['K = [C]^c [D]^d / ([A]^a [B]^b)', 'N₂O₄(무색) ⇌ 2NO₂(적갈색), ΔH > 0'],
     safetyLevel: '주의',
     safetyEquipments: ['후드 사용 필수', 'NO₂ 기체 흡입 방지 마스크'],
-    pedagogyModel: '개념기반 탐구학습 (Concept-Based Inquiry)',
-    views: 1980,
-    likes: 162,
-    content: `### 1. 개념적 렌즈 (Conceptual Lens)
-- **균형과 항상성(Equilibrium & Homeostasis)**: 닫힌계에서 반응이 정지한 것이 아니라 정반응 속도와 역반응 속도가 같아 겉보기에 변화가 없는 동적 평형(Dynamic Equilibrium) 상태.
+    pedagogyModel: '5E 탐구 모형 (Elaborate & Evaluate)',
+    views: 2450,
+    likes: 198,
+    content: `### 1. 실험의 묘미 및 변인 통제
+- 닫힌 앰플 속의 이산화 질소 기체를 뜨거운 물과 얼음물에 번갈아 담그며 색의 짙기를 분광광도계나 스마트폰 조도 센서 앱으로 정량 비교합니다.
 
-### 2. 르샤틀리에 원리 핵심 정리
-1. **농도 변화**: 반응물을 가하면 반응물을 소모하는 정반응 방향으로 이동.
-2. **압력(부피) 변화**: 기체 분자 수가 감소하는 방향으로 평형 이동.
-3. **온도 변화**:
-   - 흡열 반응(ΔH > 0): 온도 상승 시 열을 흡수하는 정반응 방향 진행 (K 증가).
-   - 발열 반응(ΔH < 0): 온도 상승 시 역반응 방향 진행 (K 감소).`
+### 2. 열역학적 연결 고리
+- 흡열 반응(ΔH > 0)의 경우 온도가 상승할 때 정반응이 우세하게 진행되어 평형 상수 K가 증가함을 반응 지수(Q)와 연계하여 설명합니다.`
   },
   {
-    id: 'mat-5',
-    title: '시계 반응(Clock Reaction)을 이용한 반응 속도식 결정 탐구',
-    grade: '화학 II',
-    gradeKey: 'chem2',
-    topic: '반응 속도론',
+    id: 'mat-6',
+    title: '시계 반응(Clock Reaction)을 이용한 화학 반응 속도식 결정',
+    grade: '화학 반응의 세계',
+    gradeKey: 'reaction_world',
+    topic: '반응 속도와 메커니즘',
     category: '실험',
     categoryKey: 'experiment',
-    summary: '아이오딘산 이온과 아황산수소 이온의 산화-환원 반응에서 녹말 지시약이 푸른색으로 변하는 시간을 측정하여 반응 차수와 속도 상수를 산출합니다.',
+    summary: '아이오딘-녹말 시계 반응을 통해 반응물의 농도 및 촉매, 온도가 반응 속도에 미치는 영향을 탐구하고 반응 차수를 결정합니다.',
     difficulty: '심화',
     keyFormulas: ['v = k[IO₃⁻]^m [HSO₃⁻]^n', 'ln(k) = -Ea/(RT) + ln(A) (아레니우스 식)'],
     safetyLevel: '주의',
     safetyEquipments: ['보안경', '실험용 장갑', '초시계', '항온 수조'],
-    pedagogyModel: '5E 탐구 모형 (Elaborate & Evaluate)',
-    views: 2450,
-    likes: 198,
-    content: `### 1. 실험의 묘미
-- 투명한 용액이 정확히 계산된 수 초 후에 순간적으로 짙은 남색(녹말-아이오딘 착물)으로 변하는 극적인 시각적 효과로 학생들의 몰입도가 극대화되는 대표적인 탐구 실험입니다.
+    pedagogyModel: '5E 탐구 모형 (Explore & Explain)',
+    views: 2210,
+    likes: 184,
+    content: `### 1. 2022 개정 화학 반응의 세계 핵심 역량
+- 화학 반응이 일어나는 속도와 그에 영향을 미치는 요인을 과학적 탐구를 통해 분석하고 충돌 이론과 전이 상태 이론으로 설명할 수 있다.
 
-### 2. 학생 주도 변인 통제 가이드
+### 2. 학생 주도 변인 통제
 - **조작 변인**: 반응물(IO₃⁻)의 농도, 반응 온도(10℃, 20℃, 30℃, 40℃)
 - **통제 변인**: 용액의 전체 부피, 교반 속도, 녹말 지시약의 양
 - **종속 변인**: 색 변화가 일어나는 데 걸린 시간(t) → 초기 반응 속도(1/t) 산출`
   },
   {
-    id: 'mat-6',
-    title: '전기화학전지(갈바니 전지)와 표준 환원 전위 분석 실험',
-    grade: '고급 화학',
-    gradeKey: 'advanced',
-    topic: '전기화학 & 열역학',
+    id: 'mat-7',
+    title: '전기화학전지(다니엘 전지)와 산화-환원 자발성 분석 실험',
+    grade: '화학 반응의 세계',
+    gradeKey: 'reaction_world',
+    topic: '전기화학 & 산화·환원 반응',
     category: '실험',
     categoryKey: 'experiment',
     summary: '아연과 구리 반쪽 전지를 염다리로 연결하여 다니엘 전지를 구성하고, 전위차계를 활용해 표준 기전력(E°cell)과 네른스트 식(Nernst Equation)을 실증 검증합니다.',
@@ -149,7 +167,7 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
     views: 1750,
     likes: 145,
     content: `### 1. 심화 탐구 목표
-- 화학 결합의 깁스 자유에너지 변화(ΔG°)와 전기적 일(W = -nFE°)의 동등성을 이해하고 계산할 수 있다.
+- 화학 반응의 자발성과 전기적 일의 동등성을 이해하고 계산할 수 있다.
 - 농도차 전지를 제작하여 네른스트 식에 따른 전압 변화를 예측하고 측정값과 비교 분석한다.
 
 ### 2. AI 프롬프트 연계 탐구 활동
@@ -157,30 +175,11 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
   - "다니엘 전지에서 질산칼륨 염다리 대신 염화나트륨 염다리를 사용할 때 은(Ag) 전극 반응에 생길 수 있는 부반응을 열역학적 침전 관점에서 검토해 줘."`
   },
   {
-    id: 'mat-7',
-    title: '분자 궤도함수론(MO Theory)과 동핵 이원자 분자의 상자성 탐구',
-    grade: '고급 화학',
-    gradeKey: 'advanced',
-    topic: '현대 화학 결합론',
-    category: '이론',
-    categoryKey: 'theory',
-    summary: '루이스 구조식과 원자가 결합 이론(VB)의 한계를 극복하는 분자 궤도함수(σ, π 결합 및 반결합 오비탈)를 이해하고 산소 분자(O₂)가 자석에 끌리는 원리를 증명합니다.',
-    difficulty: '심화',
-    keyFormulas: ['Bond Order = (N_b - N_a) / 2', 'O₂ 결합 차수 = (8 - 4) / 2 = 2 (홀전자 2개)'],
-    safetyLevel: '안전',
-    pedagogyModel: '개념기반 탐구학습',
-    views: 1320,
-    likes: 110,
-    content: `### 1. 오개념 교정 포인트
-- 루이스 구조식으로는 산소 분자(O=O)의 모든 전자가 쌍을 이루고 있어 반자성(diamagnetic)이어야 할 것 같지만, 실제 액체 산소는 강력한 네오디뮴 자석 극 사이에 매달리는 상자성(paramagnetic)을 보입니다.
-- π* 반결합 오비탈에 2개의 홑전자가 훈트 규칙에 따라 평행 스핀으로 배치됨을 MO 다이어그램을 그리며 도출합니다.`
-  },
-  {
     id: 'mat-8',
     title: '2022 개정 화학과 교육과정 기반 5E 수업 설계 템플릿 & 루브릭',
-    grade: '화학 I',
-    gradeKey: 'chem1',
-    topic: '교수학습 자료 / 교사용',
+    grade: '화학',
+    gradeKey: 'chem',
+    topic: '교수학습 지도안 / 성취기준 루브릭',
     category: '교수학습',
     categoryKey: 'pedagogy',
     summary: '참여(Engage)부터 평가(Evaluate)까지 단계별 핵심 질문, 학생 활동지 구성 및 교과 역량(과학적 사고력, 탐구능력) 중심 과정평가 루브릭을 제공합니다.',
@@ -202,7 +201,7 @@ export const INITIAL_MATERIALS: LessonMaterial[] = [
 export const INITIAL_POSTS: Post[] = [
   {
     id: 1,
-    title: '고2 화학I 중화 적정 마이크로스케일(MBL) 실험 팁 공유합니다',
+    title: '2022 개정 [화학] 중화 적정 마이크로스케일(MBL) 실험 팁 공유합니다',
     content: '전통적인 50mL 뷰렛 대신 점적병과 웰플레이트를 사용하는 마이크로스케일 실험을 도입했더니 폐액 발생량이 95% 줄고 학생들의 안전사고 위험도 완전히 해소되었습니다. 실험 레시피 첨부합니다!',
     author: '화학사랑김선생',
     created_at: '2026-10-06T15:30:00Z',
@@ -210,16 +209,16 @@ export const INITIAL_POSTS: Post[] = [
   },
   {
     id: 2,
-    title: '오비탈 전자 배치 3D 시뮬레이션 활용 수업 후기 (학생 반응 최고)',
-    content: '자기양자수와 스핀자기양자수의 개념을 칠판 그림으로만 설명하다가 WebGL 3D 오비탈 뷰어를 스마트패드로 직접 회전하며 조작하게 하니 이해도가 눈에 띄게 높아졌습니다. 다음 주 옥텟 규칙 수업에도 적용 예정입니다.',
+    title: '[물질과 에너지] 오비탈과 분자 간 인력 3D 시뮬레이션 활용 후기',
+    content: '분자 간 상호작용과 끓는점 비교 단원에서 WebGL 3D 분자 뷰어를 스마트패드로 조작하게 하니 학생들의 자발적 탐구 몰입도가 최고였습니다. 다음 주 수소 결합 수업에도 적용 예정입니다.',
     author: '사이언스박쌤',
     created_at: '2026-10-06T16:15:00Z',
     likes: 38
   },
   {
     id: 3,
-    title: '화학II 평형상수 K와 반응지수 Q 구별하는 꿀팁 질문드립니다!',
-    content: '기출문제 풀이할 때 온도 변화 시 평형 이동과 농도 변화 시 평형 이동에서 K값 변동 여부를 학생들이 매번 헷갈려 하는데 가장 직관적으로 각인시키는 비유가 있을까요?',
+    title: '[화학 반응의 세계] 반응지수 Q와 평형상수 K 동적 평형 수업 질문입니다!',
+    content: '가역 반응의 평형 이동 단원에서 르샤틀리에 원리를 직관적으로 체득시킬 수 있는 롤플레잉 게임이나 비유적 교수법이 있을까요? 선생님들의 노하우를 듣고 싶습니다.',
     author: '신규교사이선생',
     created_at: '2026-10-06T17:00:00Z',
     likes: 29
@@ -241,7 +240,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     options: ['11.2 L', '22.4 L', '33.6 L', '44.8 L'],
     answer: 1,
     explanation: '아보가드로 법칙에 따라 0℃, 1기압에서 모든 기체 1몰의 부피는 기체의 종류에 관계없이 약 22.4 L입니다.',
-    concept: '몰과 기체 부피 (화학 I)'
+    concept: '몰과 기체 부피 (화학)'
   },
   {
     id: 2,
@@ -261,7 +260,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
   },
   {
     id: 4,
-    question: '반응 속도론에서 정촉매(Catalyst)를 첨가했을 때 일어나는 올바른 변화는?',
+    question: '화학 반응의 세계 단원에서 정촉매(Catalyst)를 첨가했을 때 일어나는 올바른 변화는?',
     options: [
       '반응 엔탈피(ΔH)가 감소한다.',
       '활성화 에너지(Ea)가 낮아져 반응 속도가 빨라진다.',
@@ -269,8 +268,8 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       '평형 상수가 큰 폭으로 증가한다.'
     ],
     answer: 1,
-    explanation: '촉매는 반응 경로를 바꾸어 활성화 에너지를 낮춤으로써 반응 속도를 증가시키며, 반응 엔탈피나 평형 상수, 이론적 수득량은 변화시키지 않습니다.',
-    concept: '반응 속도와 촉매 (화학 II)'
+    explanation: '촉매는 반응 경로를 바꾸어 활성화 에너지를 낮춤으로써 반응 속도를 증가시키며, 반응 엔탈피나 평형 상수는 변화시키지 않습니다.',
+    concept: '반응 속도와 촉매 (화학 반응의 세계)'
   },
   {
     id: 5,
@@ -333,7 +332,7 @@ export const PEDAGOGY_THEORIES = [
     id: 'ped-4',
     title: '과정중심 성취기준 역량 루브릭 (Formative Rubrics)',
     founder: '교육부 학생평가 혁신 모델',
-    tag: '성취평가제 최적화',
+    tag: '2022 개정 성취평가제',
     summary: '일회성 지필평가를 탈피하여 탐구 설계 능력, 실험실 안전 준수도, 과학적 소통 능력을 4단계 척도로 다면 평가하여 피드백을 수업 중에 실시간 환류.',
     steps: [
       '성취수준 A/B/C/D 명확한 행동 지표 규정',

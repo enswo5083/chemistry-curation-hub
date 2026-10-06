@@ -1,10 +1,10 @@
-export type GradeLevel = 'all' | 'integrated' | 'chem1' | 'chem2' | 'advanced';
+export type GradeLevel = 'all' | 'integrated' | 'chem' | 'matter_energy' | 'reaction_world';
 export type MaterialCategory = 'all' | 'theory' | 'experiment' | 'simulation' | 'pedagogy';
 
 export interface LessonMaterial {
   id: string;
   title: string;
-  grade: '통합과학' | '화학 I' | '화학 II' | '고급 화학';
+  grade: '통합과학' | '화학' | '물질과 에너지' | '화학 반응의 세계';
   gradeKey: GradeLevel;
   topic: string;
   category: '이론' | '실험' | '시뮬레이션' | '교수학습';

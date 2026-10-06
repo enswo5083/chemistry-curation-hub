@@ -1,37 +1,32 @@
-# 🧪 고등학교 화학 수업 모음집 (High School Chemistry Curriculum & Inquiry Hub)
+# 🧪 고등학교 화학 수업 모음집 (2022 개정 교육과정 반영)
 
-대한민국 고등학교 화학 교사와 학생들을 위한 고품격 포털 & 콘텐츠 큐레이션 플랫폼입니다.
+대한민국 2022 개정 교육과정에 맞추어 전면 개편된 고등학교 화학 교사와 학생을 위한 고품격 포털 & 콘텐츠 큐레이션 플랫폼입니다.
 
 ---
 
-## 🌟 주요 특징
-- **학년별 & 주제별 큐레이션**: 통합과학 화학 파트, 화학 I, 화학 II, 고급 화학 전 과정 완벽 커버
-- **이론 & 실험 분리 가이드**: 개념 강의노트와 함께 MSDS 안전 가이드, 필수 보호구 매뉴얼 제공
+## 🌟 2022 개정 교육과정 교과 재편 반영
+- **통합과학 (공통과목)**: 물질의 규칙성과 화학 결합의 기초
+- **화학 (일반선택과목)**: 물질의 양과 화학 반응의 양적 관계, 원자 구조와 주기성, 화학 결합과 분자의 세계, 역동적인 화학 반응 (기존 화학Ⅰ 개편)
+- **물질과 에너지 (진로선택과목)**: 물질의 세 가지 상태와 용액, 화학 반응과 열에너지, 화학 평형과 에너지 (기존 화학Ⅱ 상태·열화학·평형 개편)
+- **화학 반응의 세계 (진로선택과목)**: 반응 속도론, 산·염기 평형과 중화 적정, 산화·환원과 전기화학 (기존 화학Ⅱ 속도·전기화학 심화 개편)
+
+---
+
+## 🚀 주요 신규 기능
+- **📤 수업 자료 올리기 (Upload Material)**:
+  - 교사가 직접 2022 개정 교과목(통합과학 / 화학 / 물질과 에너지 / 화학 반응의 세계)과 자료 유형(이론 / 실험 / 시뮬레이션 / 교수학습)을 지정하여 신규 수업 자료를 원클릭 등록
+  - 핵심 화학식, 실험 안전 등급(MSDS), 필수 보호구, 적용 교수학습 모형 설정 지원
+  - 등록 즉시 큐레이션 아카이브에 실시간 반영 및 로컬 저장소 영구 보존
 - **최신 탐구 교수학습 모형 탑재**:
   - Lynn Erickson & Lois Lanning의 **개념기반 탐구학습 (Concept-Based Inquiry)**
   - BSCS **5E 순환학습 모형 (Engage, Explore, Explain, Elaborate, Evaluate)**
   - **생성형 AI 융합 화학 탐구 프레임워크**
-  - 과정중심 평가 성취기준 루브릭
+  - 2022 개정 성취평가제 대비 **과정중심 성취기준 루브릭**
 - **상호작용 도구**:
-  - 화학 반응식 밸런서 & 분자량(Molar Mass) 계산기
+  - 화학 반응식 밸런서 & 분자량(Molar Mass) 실시간 계산기
   - 도전! 고교 화학 챔피언십 퀴즈 & 실시간 명예의 전당 랭킹
-  - 교사 & 학생 수업 자료 나눔 및 질문 커뮤니티 (좋아요 기능 포함)
-- **감각적인 융합 디자인**:
-  - **오로라 메쉬 그라디언트 (Aurora / Mesh Gradient)**
-  - **플랫 2.0 / 모던 머티리얼 (Flat 2.0 / Modern Material)**
-  - **뉴모피즘 (Neumorphism / Soft UI)**
-  - 우측 상단 원클릭 다크 모드 / 라이트 모드 지원
+  - 교사 & 학생 수업 자료 나눔 및 질문 커뮤니티
 - **⚡ 인프라 최적화 (Seoul Region 통일)**:
   - Vercel Serverless Function: `icn1` (Seoul, South Korea)
   - Supabase Database: `ap-northeast-2` (Seoul, South Korea)
-  - 네트워크 지연시간(RTT) < 5ms 극단적 단축
-
----
-
-## 🛠️ 기술 스택
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS, Neumorphic Custom Utilities
-- **Database / Backend**: Supabase PostgreSQL (`posts`, `rankings`)
-- **Icons & Effects**: Lucide React, Canvas Confetti
-- **Deployment**: Vercel (`vercel.json` region: `icn1`)
+  - 라이브 서비스 URL: https://chemistry-curation-hub.vercel.app
