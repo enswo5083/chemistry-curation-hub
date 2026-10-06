@@ -4,9 +4,11 @@ import { useState, useMemo, useEffect } from 'react';
 import { INITIAL_MATERIALS } from '@/lib/initialData';
 import { LessonMaterial, GradeLevel, MaterialCategory } from '@/lib/types';
 import { getMaterialsFromStorage, saveMaterialToStorage, deleteMaterialFromStorage } from '@/lib/storage';
-import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2, Paperclip, Edit3, Trash2 } from 'lucide-react';
+import { getIsAdminSession } from '@/lib/adminAuth';
+import { Search, Heart, ExternalLink, Filter, Sparkles, BookOpen, Beaker, Laptop, Award, Shield, Upload, PlusCircle, CheckCircle2, Paperclip, Edit3, Trash2, Lock, ShieldCheck } from 'lucide-react';
 import MaterialModal from './MaterialModal';
 import UploadMaterialModal from './UploadMaterialModal';
+import AdminLoginModal from './AdminLoginModal';
 import confetti from 'canvas-confetti';
 
 export default function CurationSection() {
@@ -15,6 +17,10 @@ export default function CurationSection() {
   const [selectedCategory, setSelectedCategory] = useState<MaterialCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Teacher Admin State
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
   // Modals state
   const [activeModalMaterial, setActiveModalMaterial] = useState<LessonMaterial | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -23,13 +29,26 @@ export default function CurationSection() {
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Listen to admin session
+  useEffect(() => {
+    setIsAdmin(getIsAdminSession());
+    const handleAuthChange = () => {
+      setIsAdmin(getIsAdminSession());
+    };
+    window.addEventListener('admin-session-change', handleAuthChange);
+    window.addEventListener('storage', handleAuthChange);
+    return () => {
+      window.removeEventListener('admin-session-change', handleAuthChange);
+      window.removeEventListener('storage', handleAuthChange);
+    };
+  }, []);
+
   // Load persistent user materials from IndexedDB/LocalStorage on mount
   useEffect(() => {
     async function loadSavedMaterials() {
       try {
         const saved = await getMaterialsFromStorage();
         if (saved && saved.length > 0) {
-          // Merge user-saved materials with INITIAL_MATERIALS, replacing if ID matches
           const savedMap = new Map<string, LessonMaterial>();
           saved.forEach((m) => savedMap.set(m.id, m));
           
@@ -37,7 +56,6 @@ export default function CurationSection() {
             savedMap.has(init.id) ? savedMap.get(init.id)! : init
           );
 
-          // Find brand new user creations (IDs not in initial)
           const newCreations = saved.filter(
             (s) => !INITIAL_MATERIALS.some((init) => init.id === s.id)
           );
@@ -85,7 +103,6 @@ export default function CurationSection() {
     const updated = [newMat, ...materials];
     setMaterials(updated);
 
-    // Save reliably to IndexedDB & LocalStorage
     await saveMaterialToStorage(newMat);
 
     confetti({
@@ -105,7 +122,6 @@ export default function CurationSection() {
     const updated = materials.map((m) => (m.id === updatedMat.id ? updatedMat : m));
     setMaterials(updated);
 
-    // Update in persistent storage
     await saveMaterialToStorage(updatedMat);
 
     if (activeModalMaterial?.id === updatedMat.id) {
@@ -124,12 +140,20 @@ export default function CurationSection() {
 
   const handleOpenEdit = (mat: LessonMaterial, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    if (!isAdmin) {
+      setIsAdminModalOpen(true);
+      return;
+    }
     setActiveModalMaterial(null);
     setEditingMaterial(mat);
     setIsUploadModalOpen(true);
   };
 
   const handleOpenUploadNew = () => {
+    if (!isAdmin) {
+      setIsAdminModalOpen(true);
+      return;
+    }
     setEditingMaterial(null);
     setIsUploadModalOpen(true);
   };
@@ -163,6 +187,16 @@ export default function CurationSection() {
           </div>
         )}
 
+        {/* Admin Status Notice Banner */}
+        {isAdmin && (
+          <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-transparent border border-amber-300 dark:border-amber-700/60 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200">
+              <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+              <span>👑 교사 관리자 모드 활성화 중: 선생님 본인만 신규 자료 등록 및 기존 자료 수정이 가능합니다.</span>
+            </div>
+          </div>
+        )}
+
         {/* Section Title & Actions */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
@@ -179,13 +213,17 @@ export default function CurationSection() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Direct Upload Button */}
+            {/* Direct Upload Button (Admin controlled) */}
             <button
               onClick={handleOpenUploadNew}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 shadow-md shadow-violet-500/25 hover:-translate-y-0.5 transition-all shrink-0"
+              className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-sm text-white shadow-md transition-all shrink-0 hover:-translate-y-0.5 ${
+                isAdmin
+                  ? 'bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 shadow-violet-500/25'
+                  : 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 shadow-slate-900/20'
+              }`}
             >
-              <Upload className="w-4 h-4" />
-              자료 올리기
+              {isAdmin ? <Upload className="w-4 h-4" /> : <Lock className="w-4 h-4 text-amber-400" />}
+              <span>{isAdmin ? '자료 올리기' : '자료 올리기 (교사 전용)'}</span>
             </button>
 
             {/* Neumorphic Search Bar */}
@@ -350,15 +388,17 @@ export default function CurationSection() {
                     </button>
 
                     <div className="flex items-center gap-2">
-                      {/* ✏️ Direct Edit Action on Card */}
-                      <button
-                        onClick={(e) => handleOpenEdit(mat, e)}
-                        className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
-                        title="자료 수정 및 다시 올리기"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>수정</span>
-                      </button>
+                      {/* ✏️ Direct Edit Action on Card (Only active for admin, or prompts login) */}
+                      {isAdmin ? (
+                        <button
+                          onClick={(e) => handleOpenEdit(mat, e)}
+                          className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
+                          title="자료 수정 및 다시 올리기"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>수정</span>
+                        </button>
+                      ) : null}
 
                       <div className="flex items-center gap-1 text-xs font-bold text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform">
                         <span>지도안 열기</span>
@@ -391,6 +431,16 @@ export default function CurationSection() {
         onAddMaterial={handleAddMaterial}
         onUpdateMaterial={handleUpdateMaterial}
         initialMaterial={editingMaterial}
+      />
+
+      {/* Admin Login Modal */}
+      <AdminLoginModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+        onLoginSuccess={() => {
+          setIsAdmin(true);
+          window.dispatchEvent(new Event('admin-session-change'));
+        }}
       />
     </section>
   );
