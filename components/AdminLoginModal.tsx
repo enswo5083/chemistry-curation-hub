@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, Lock, KeyRound, Eye, EyeOff, ShieldCheck, AlertCircle } from 'lucide-react';
-import { setAdminSession, DEFAULT_ADMIN_PASSWORD } from '@/lib/adminAuth';
+import { setAdminSession, DEFAULT_ADMIN_PASSWORD, verifyAdminPassword, hasCustomAdminPassword } from '@/lib/adminAuth';
 
 interface AdminLoginModalProps {
   isOpen: boolean;
@@ -30,6 +30,15 @@ export default function AdminLoginModal({
     setErrorMsg(null);
 
     try {
+      const isLocallyValid = verifyAdminPassword(password);
+      if (isLocallyValid) {
+        setAdminSession(true);
+        onLoginSuccess();
+        onClose();
+        setPassword('');
+        return;
+      }
+
       const res = await fetch('/api/auth/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -44,19 +53,10 @@ export default function AdminLoginModal({
         onClose();
         setPassword('');
       } else {
-        // Fallback check against default password
-        if (password.trim() === DEFAULT_ADMIN_PASSWORD) {
-          setAdminSession(true);
-          onLoginSuccess();
-          onClose();
-          setPassword('');
-        } else {
-          setErrorMsg(data.message || '비밀번호가 올바르지 않습니다.');
-        }
+        setErrorMsg(data.message || '비밀번호가 올바르지 않습니다.');
       }
     } catch {
-      // Local fallback
-      if (password.trim() === DEFAULT_ADMIN_PASSWORD) {
+      if (verifyAdminPassword(password)) {
         setAdminSession(true);
         onLoginSuccess();
         onClose();
@@ -129,8 +129,16 @@ export default function AdminLoginModal({
           )}
 
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-            💡 <strong>초기 기본 비밀번호:</strong> <code className="font-mono font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/60 px-1.5 py-0.5 rounded">chem2022!</code><br />
-            (Vercel 대시보드 환경변수 <code className="font-mono text-purple-600 dark:text-purple-400">ADMIN_PASSWORD</code>를 설정하여 언제든 원하는 비밀번호로 변경할 수 있습니다.)
+            {hasCustomAdminPassword() ? (
+              <>
+                🔒 <strong>보안 알림:</strong> 선생님께서 직접 설정하신 고유 비밀번호가 적용되어 있습니다.
+              </>
+            ) : (
+              <>
+                💡 <strong>초기 기본 비밀번호:</strong> <code className="font-mono font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/60 px-1.5 py-0.5 rounded">chem2022!</code><br />
+                로그인 후 상단 네비게이션의 <strong>설정 아이콘(⚙️)</strong>을 누르면 언제든 나만의 비밀번호로 즉시 변경할 수 있습니다.
+              </>
+            )}
           </div>
 
           <div className="pt-2 flex items-center justify-end gap-3">

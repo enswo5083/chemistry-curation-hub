@@ -418,7 +418,7 @@ export default function CurationSection() {
       <MaterialModal
         material={activeModalMaterial}
         onClose={() => setActiveModalMaterial(null)}
-        onEdit={handleOpenEdit}
+        onEdit={isAdmin ? handleOpenEdit : undefined}
       />
 
       {/* Upload & Edit Material Modal */}
