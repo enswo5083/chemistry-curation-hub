@@ -6,6 +6,7 @@ import ChemicalToolSection from '@/components/ChemicalToolSection';
 import QuizSection from '@/components/QuizSection';
 import CommunitySection from '@/components/CommunitySection';
 import Footer from '@/components/Footer';
+import ChemistryChatbot from '@/components/ChemistryChatbot';
 
 export default function HomePage() {
   return (
@@ -20,6 +21,8 @@ export default function HomePage() {
         <CommunitySection />
       </div>
       <Footer />
+      {/* 🧪 Socratic Scaffolding Chemistry Chatbot */}
+      <ChemistryChatbot />
     </main>
   );
 }
